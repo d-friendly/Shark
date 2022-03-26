@@ -2,18 +2,27 @@
 import React, {useEffect, useState, useCallback, API} from "react";
 import ItemRow from "../components/ItemRow";
 
+
+ 
 export default function Challenge() {
   const [checked, setChecked] = useState(false);
   const jsonInitialState ="null";
-  const [jsonState, setJson] = useState(jsonInitialState);
+  const [jsonState, setJson] = useState([]);
+  const [filteredJsonState, setFilteredJson] = useState([]);
   const toggle = previous => !previous;
+  const [tableRow, setTableRow] = useState(["Name",0,0,0,0])
+  // const [orderAmt, setOrderAmt] = userState
   
-    
-  function getList(){
-    return jsonState.map((item,index)=>{
-      return <ItemRow/>
-    })
+  const eventhandler = data => {
+
+    console.log(data)  
   }
+  useEffect(() =>{
+    let filteredList = jsonState;
+    
+    // filteredList=filteredList.filter(jsonItem => console.log(jsonItem));
+  },[jsonState,filteredJsonState])
+
 
   async function getLowStockItems(postOrGet) {
     if(toggle){ 
@@ -21,10 +30,8 @@ export default function Challenge() {
     }else{
       setChecked(toggle);
     }
-  
-    
-    console.log({checked});
     let url="";
+    
     if(postOrGet == "GET"){
       url = 'http://localhost:4567/low-stock';
       const response = await fetch(url);
@@ -33,11 +40,34 @@ export default function Challenge() {
         throw new Error(message);
       }
       const json = await response.json();
-      console.log(json);
+      // console.log(json);
+      let list = []
+      for(var i=0; i < json.length;i++){
+        // console.log(json[i].Stock/json[i].Capacity) ;
+        if(json[i].Stock/json[i].Capacity < .25) {
+          // console.log(json[i]);
+          // console.log(displayList());
+          
+          
+          list.push(
+            <tr><ItemRow name={json[i].Name} stock={json[i].Stock} capacity={json[i].Capacity} id={json[i].ID} onChange={eventhandler}/></tr>
+          )
+          
+          // console.log(list);
+          
+          //update state here 
+        }
+      }
+      console.log(list);
+      setFilteredJson(list);
+      // console.log(filteredJsonState)
       setJson(json);
-      console.log("Json State below");
-      console.log(jsonState);
-      console.log("json above")
+      // console.log("Json State below");
+      // console.log(jsonState);
+      // console.log("json above")
+      
+      // const newJson = {jsonState}.filter((jsonItem) => jsonItem.stock / jsonItem.capacity)
+    
     }else{
       url = 'http://localhost:4567/restock-cost';
       const settings = {
@@ -77,7 +107,15 @@ export default function Challenge() {
           </tr>
         </thead>
         <tbody>
-          {getList}
+          {checked? 
+            filteredJsonState.map(data =>{
+              return data;
+            })
+          :
+            <></>
+          }
+          {/* <ItemRow/> */}
+          
           
           
           

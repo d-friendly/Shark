@@ -145,7 +145,8 @@ public class Main {
         //TODO: Return JSON containing the candies for which the stock is less than 25% of it's capacity
         get("/low-stock", (request, response) -> {
             JsonObject jObject = readExcelFile("server/resources/Inventory.xlsx");
-            return jObject;
+			System.out.println(jObject.get("Randy's Candies"));
+            return jObject.get("Randy's Candies");
         });
 
         //TODO: Return JSON containing the total cost of restocking candy
